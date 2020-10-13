@@ -1,0 +1,13 @@
+#telaLogin{
+	width: 400px;
+	top: 50%;
+	left: 50%;
+	position: absolute;
+	transform: translate(-50%, -50%);
+	box-shadow: 1px 10px 30px rgb(195, 195, 195);
+	opacity: 0.8;
+}
+
+#fundoLogin{
+	background-color: rgb(135,206,235);
+}

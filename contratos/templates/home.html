@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Contratos</title>
+	
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<script 
+		src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script 
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet"
+		href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css">
+	<script src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="static/css/user-form.css"
+		th:href="@{/css/user-form.css}">
+	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+	<style>
+		table.table td a.edit {
+			color: #FFC107;
+		}
+		
+		table.table td a.delete {
+			color: #F44336;
+		}
+	</style>
+
+	<!-- DATA TABLE -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">	
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+</head>
+<body>
+	<div class="container">
+	<div class="mx-auto col-sm-12 main-section" id="myTab" role="tablist">
+		<ul class="nav nav-tabs justify-content-end">
+			<li class="nav-item">
+			<a class="nav-link active" id="list-tab" data-toggle="tab" href="#list" role="tab" aria-controls="list" aria-selected="false">Contratos</a>
+			</li>
+			<li class="nav-item">
+			<a class="nav-link" id="form-tab" data-toggle="tab" href="#form" role="tab" aria-controls="form" aria-selected="true">Adicionar Contrato</a>	   	
+			</li>
+			<li>
+				<a href="/sair/" class="btn btn-danger">Sair</a>	
+			</li>
+
+		</ul>
+
+		{% if messages %}
+			{% for message in messages %}
+			<div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+				{{ message }}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			</div>
+			{% endfor %}
+		{% endif %}
+
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade show active" id="list" role="tabpanel" aria-labelledby="list-tab">
+				<div class="card">
+					<div class="card-header">
+						<h4>Lista de Contratos</h4>
+					</div>
+					<div class="card-body">
+						<div class="table-responsive">
+							<table id="userList" class="table table-bordered table-hover table-striped">
+								<thead class="thead-light">
+								<tr>					
+									<th scope="col">Contrato</th>
+									<th scope="col">Status</th>
+									<th scope="col">Tipo</th>
+									<th scope="col">Data de Início</th>
+									<th scope="col">Data de Término</th>
+									<th>Ações</th>
+								</tr>
+								</thead>
+								<tbody>
+									{% for contrato in contratos %}
+										<tr>		
+											<td> <a href="#"><b>{{contrato.numero_contrato}}</b> </td>
+											<th>{{contrato.status}}</th>
+											<td>{{contrato.tipo}}</td>
+											<td>{{contrato.data_inicio}}</td>
+											<td>{{contrato.data_fim}}</td>
+											<td>
+												<a href="#" class="edit"><i class="material-icons" data-toggle="tooltip" title="Editar">&#xE254;</i></a>
+												<a href="/contratos/deletar/{{contrato.id}}/" class="delete"><i class="material-icons" data-toggle="tooltip" title="Excluir">&#xE872;</i></a>
+											</td>
+										</tr>
+									{% endfor %}
+								
+								</tbody>
+							</table>
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="form" role="tabpanel" aria-labelledby="form-tab">
+				<div class="card">
+					<div class="card-header">
+						<h4>Novo Contrato</h4>
+					</div>
+
+					<div class="card-body">
+						<form class="form" role="form" autocomplete="off" method="POST" action="/contratos/criar/" enctype="multipart/form-data">
+							{% csrf_token %}
+							<div class="form-group row">
+								<label class="col-lg-3 col-form-label form-control-label"><b>Contrato</b></label>
+								<div class="col-lg-9">
+									<input class="form-control" type="text" name="numero_contrato">
+								</div>
+
+							</div>
+							<div class="form-group row">
+								<label class="col-lg-3 col-form-label form-control-label"><b>Descrição</b></label>
+								<div class="col-lg-9">
+									<textarea cols="107" rows="5" name="descricao"></textarea>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label class="col-lg-3 col-form-label form-control-label"><b>Valor</b></label>
+								<div class="col-lg-9">
+									<input class="form-control" type="number" min="0" name="valor">
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label class="col-lg-3 col-form-label form-control-label"><b>Data de Inicio</b></label>
+								<div class="col-lg-9">
+									<input class="form-control" type="date" name="data_inicio">
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label class="col-lg-3 col-form-label form-control-label"><b>Data de Término</b></label>
+								<div class="col-lg-9">
+									<input class="form-control" type="date" name="data_fim">
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label class="col-lg-3 col-form-label form-control-label"><b>Tipo de Contrato</b></label>
+								<div class="col-lg-9">
+									<select name="tipo" id="tipo" name="tipo">
+										<option value="1">Serviços</option>
+										<option value="2">Produtos</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label class="col-lg-3 col-form-label form-control-label"><b>Status</b></label>
+								<div class="col-lg-9">
+									<select name="status" id="status" name="status">
+										<option value="1">Ativo</option>
+										<option value="2">Concluido</option>
+										<option value="3">Finalizado</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label class="col-lg-3 col-form-label form-control-label"><b>Anexar Arquivo</b></label>
+								<div class="col-lg-9">
+									<input class="form-control" type="file" name="arquivo" id="arquivo">
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<div class="col-lg-12 text-center">
+									<input type="reset" class="btn btn-secondary" value="Cancelar">
+									<input type="submit" class="btn btn-primary"
+										value="Adicionar">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	const traducao_datatables = {
+		"sEmptyTable": "Nenhum registro encontrado",
+		"sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+		"sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+		"sInfoFiltered": "(Filtrados de _MAX_ registros)",
+		"sInfoPostFix": "",
+		"sInfoThousands": ".",
+		"sLengthMenu": "_MENU_ resultados por página",
+		"sLoadingRecords": "Carregando...",
+		"sProcessing": "Processando...",
+		"sZeroRecords": "Nenhum registro encontrado",
+		"sSearch": "Pesquisar",
+		"oPaginate": {
+			"sNext": "Próximo",
+			"sPrevious": "Anterior",
+			"sFirst": "Primeiro",
+			"sLast": "Último"
+		},
+		"oAria": {
+			"sSortAscending": ": Ordenar colunas de forma ascendente",
+			"sSortDescending": ": Ordenar colunas de forma descendente"
+		}
+	}
+
+	$(document).ready(function() {
+
+		$('#userList').DataTable({"oLanguage" : traducao_datatables});
+	} );
+</script>
+</body>
+</html>
