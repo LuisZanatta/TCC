@@ -26,10 +26,10 @@ class Contrato (models.Model):
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivo = models.FileField(upload_to='contratos/', verbose_name="Arquivo do Contrato:")
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    # se for um serviço
-    descricao_servico = models.TextField(null=True, blank=True)
-    # se for um produto
-    descricao_produto = models.TextField(null=True, blank=True)
+    # # se for um serviço
+    # descricao_servico = models.TextField(null=True, blank=True)
+    # # se for um produto
+    # descricao_produto = models.TextField(null=True, blank=True)
     tipo_produto = models.CharField(max_length=200, null=True, blank=True)
     quantidade_produto = models.CharField(max_length=200, null=True, blank=True)
 

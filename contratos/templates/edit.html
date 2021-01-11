@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Contratos</title>
+	
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<script 
+		src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script 
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet"
+		href="https://use.fontawesome.com/releases/v5.0.8/css/solid.css">
+	<script src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="static/css/user-form.css"
+		th:href="@{/css/user-form.css}">
+	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+	<style>
+		table.table td a.edit {
+			color: #FFC107;
+		}
+		
+		table.table td a.delete {
+			color: #F44336;
+		}
+	</style>
+
+	<!-- DATA TABLE -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">	
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+</head>
+<body>
+
+    <div class="card">
+    <div class="card-header">
+        <h4>Atualizar Contrato {{ contrato.numero_contrato }}</h4>
+    </div>
+
+    <div class="card-body">
+        <form class="form" role="form" autocomplete="off" method="POST" action="/contratos/editar/{{contrato.id}}/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group row">
+                <label class="col-lg-3 col-form-label form-control-label"><b>Contrato</b></label>
+                <div class="col-lg-9">
+                    <input class="form-control" type="text" name="numero_contrato" value="{{ contrato.numero_contrato }}">
+                </div>
+
+            </div>
+
+            <div class="form-group row">
+				<label class="col-lg-3 col-form-label form-control-label"><b>Descrição</b></label>
+				<div class="col-lg-9">
+					<textarea cols="82" rows="5" name="descricao"></textarea>
+				</div>
+			</div>
+
+            <div class="form-group row">
+                <label class="col-lg-3 col-form-label form-control-label"><b>Valor</b></label>
+                <div class="col-lg-9">
+                    <input class="form-control" type="number" min="0" name="valor" value="{{ contrato.valor | floatformat:2 }}">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-lg-3 col-form-label form-control-label"><b>Data de Inicio</b></label>
+                <div class="col-lg-9">
+                    <input class="form-control" type="date" name="data_inicio" value="{{ contrato.data_inicio|date:'Y-m-d' }}">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-lg-3 col-form-label form-control-label"><b>Data de Término</b></label>
+                <div class="col-lg-9">
+                    <input class="form-control" type="date" name="data_fim" value="{{ contrato.data_fim|date:'Y-m-d' }}">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-lg-3 col-form-label form-control-label"><b>Tipo de Contrato</b></label>
+                <div class="col-lg-9">
+                    <select name="tipo" id="tipo" name="tipo">
+                        {% if contrato.tipo == '1' %}
+                            <option value="1" selected>Serviços</option>
+                        {% else %}
+                            <option value="1">Serviços</option>
+                        {% endif %}
+                        {% if contrato.tipo == '2' %}
+                            <option value="2" selected>Produtos</option>
+                        {% else %}
+                            <option value="2">Produtos</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-lg-3 col-form-label form-control-label"><b>Status</b></label>
+                <div class="col-lg-9">
+                    <select name="status" id="status" name="status" onChange="validarMotivoCancelamento()">
+                        {% if contrato.status == '1' %}
+                            <option value="1" selected>Ativo</option>
+                        {% else %}
+                            <option value="1">Ativo</option>
+                        {% endif %}
+                        {% if contrato.status == '2' %}
+                            <option value="2" selected>Concluido</option>
+                        {% else %}
+                            <option value="2">Concluido</option>
+                        {% endif %}
+                        {% if contrato.status == '3' %}
+                            <option value="3" selected>Cancelado</option>
+                        {% else %}
+                            <option value="3">Cancelado</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+
+            <div id="div-pai">
+                {% comment %} <div class="form-group row" id="div-motivo-cancelamento">
+                    <label class="col-lg-3 col-form-label form-control-label"><b>Motivo Cancelamento</b></label>
+                    <div class="col-lg-9">
+                        {% if contrato.motivo_cancelamento %}
+                            <textarea  class="form-control" name="motivo_cancelamento">{{ contrato.motivo_cancelamento }}</textarea>
+                        {% else %}
+                            <textarea  class="form-control" name="motivo_cancelamento"></textarea>
+                        {% endif %}
+                    </div>
+                </div> {% endcomment %}
+            </div>
+
+            <div class="form-group row ml-1">
+                <a href="{{ contrato.arquivo.url }}" target="_blank"><b>Vizualizar Arquivo</b></a>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-lg-3 col-form-label form-control-label"><b>Anexar Arquivo</b></label>
+                <div class="col-lg-9">
+                    <input class="form-control" type="file" name="arquivo" id="arquivo">
+                </div>
+            </div>
+
+
+            <div class="form-group row">
+                <div class="col-lg-12 text-center">
+                    <input type="reset" class="btn btn-secondary" value="Cancelar">
+                    <input type="submit" class="btn btn-primary"
+                        value="Atualizar">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <script>
+
+        $(document).ready(function() {
+            validarMotivoCancelamento();
+        })
+
+        function validarMotivoCancelamento() {
+            let valor = $('#status').val();
+            let div = `
+                <div class="form-group row" id="div-motivo-cancelamento">
+                    <label class="col-lg-3 col-form-label form-control-label"><b>Motivo Cancelamento</b></label>
+                    <div class="col-lg-9">
+                        {% if contrato.motivo_cancelamento %}
+                            <textarea  class="form-control" name="motivo_cancelamento">{{ contrato.motivo_cancelamento }}</textarea>
+                        {% else %}
+                            <textarea  class="form-control" name="motivo_cancelamento"></textarea>
+                        {% endif %}
+                    </div>
+                </div>
+            `
+            if (valor == '3') {
+                $('#div-pai').append(div);
+            } else {
+                $('#div-motivo-cancelamento').remove();
+            }
+        }
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

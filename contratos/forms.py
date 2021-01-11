@@ -15,3 +15,15 @@ class FormCadastroContrato(forms.Form):
     tipo = forms.CharField()
     status = forms.CharField()
     arquivo = forms.FileField()
+
+
+class FormEditarContrato(forms.Form):
+    numero_contrato = forms.CharField()
+    valor = forms.CharField()
+    descricao = forms.CharField()
+    data_inicio = forms.DateField()
+    data_fim = forms.DateField()
+    tipo = forms.CharField()
+    status = forms.CharField()
+    arquivo = forms.FileField(required=False)
+    motivo_cancelamento = forms.CharField(required=False)

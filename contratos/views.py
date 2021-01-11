@@ -4,8 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from contratos.models import Contrato, Aditivo
-from contratos.forms import FormCadastroContrato
+from contratos.forms import FormCadastroContrato, FormEditarContrato
 from django.contrib import messages
+from envio_de_emails.views import send_mail
 
 def entrar(request):
     if request.method == 'GET':
@@ -46,8 +47,6 @@ def cadastrar_contrato(request):
         form = FormCadastroContrato(request.POST, request.FILES)
         if form.is_valid():
             novo_contrato = Contrato()
-            print(form.cleaned_data)
-            print(form.cleaned_data['numero_contrato'])
             novo_contrato.numero_contrato = form.cleaned_data['numero_contrato']
             novo_contrato.valor = form.cleaned_data['valor']
             novo_contrato.descricao = form.cleaned_data['descricao']
@@ -58,10 +57,10 @@ def cadastrar_contrato(request):
             novo_contrato.arquivo = form.cleaned_data['arquivo']
             novo_contrato.usuario = request.user
             novo_contrato.save()
+            send_mail(novo_contrato)
             messages.success(request, 'Contrato cadastrado com sucesso!')
             return HttpResponseRedirect('/contratos/')
         messages.error(request, 'Contrato não cadastrado! Verifique os campos e tente cadastrar novamente!')
-        print(form.errors)
         return HttpResponseRedirect('/contratos/')
 
 @login_required
@@ -73,3 +72,42 @@ def deletar_contrato(request, id):
     else:
         messages.error(request, 'Contrato não encontrado!')
     return HttpResponseRedirect('/contratos/')
+
+
+@login_required
+def editar_contrato(request, id):
+    if request.method == 'GET':
+        contrato = Contrato.objects.filter(id=id).first()
+        context = {
+            'contrato': contrato,
+        }
+        return render(request, 'edit.html', context)
+    if request.method == 'POST':
+        form = FormEditarContrato(request.POST, request.FILES)
+        if form.is_valid():
+            contrato = Contrato.objects.filter(id=id).first()
+            contrato.numero_contrato = form.cleaned_data['numero_contrato']
+            contrato.valor = form.cleaned_data['valor']
+            contrato.descricao = form.cleaned_data['descricao']
+            contrato.data_inicio = form.cleaned_data['data_inicio']
+            contrato.data_fim = form.cleaned_data['data_fim']
+            contrato.tipo = form.cleaned_data['tipo']
+            contrato.status = form.cleaned_data['status']
+            if form.cleaned_data['arquivo']:
+                contrato.arquivo = form.cleaned_data['arquivo']
+            if form.cleaned_data['motivo_cancelamento']:
+                contrato.motivo_cancelamento = form.cleaned_data['motivo_cancelamento']
+            contrato.save()
+            messages.success(request, 'Contrato editado com sucesso!')
+            return HttpResponseRedirect('/contratos/')
+        messages.error(request, 'Contrato não editado! Verifique os campos e tente cadastrar novamente!')
+        return HttpResponseRedirect('/contratos/')
+
+
+@login_required
+def detalhe_contrato(request, id):
+    contrato = Contrato.objects.filter(id=id).first()
+    context = {
+        'contrato': contrato,
+    }
+    return render(request, 'detalhe.html', context)
